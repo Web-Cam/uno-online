@@ -306,6 +306,17 @@ io.on("connection", function (socket) {
       activeRooms[room].deck.findIndex((i) => i === activeRooms[room].deck[card]),
       1
     );
+    
+    do {
+      card = Math.floor(Math.random() * activeRooms[room].deck.length);
+    } while (activeRooms[room].deck[card] === "ww" || activeRooms[room].deck[card].substr(1, 2) === "d" || activeRooms[room].deck[card].substr(1, 2) === "r" || activeRooms[room].deck[card].substr(1, 2) === "s");
+
+    activeRooms[room].currentCard = activeRooms[room].deck[card];
+
+    activeRooms[room].deck.splice(
+      activeRooms[room].deck.findIndex((i) => i === activeRooms[room].deck[card]),
+      1
+    );
 
     io.in(roomKey).emit("gameStart", activeRooms[room]);
 
@@ -344,6 +355,17 @@ io.on("connection", function (socket) {
       }
 
       var hasUno = [];
+            activeRooms[room].players[player].hand.push(activeRooms[room].deck[card]);
+
+      activeRooms[room].deck.splice(card, 1);
+
+      if (activeRooms[room].deck.length === 0) {
+        activeRooms[room].deck = activeRooms[room].discarded;
+        activeRooms[room].discarded = [];
+      }
+
+      var hasUno = [];
+
 
       for (var i = 0; i < activeRooms[room].players.length; i++) {
         if (activeRooms[room].players[i].hand.length === 1) {
